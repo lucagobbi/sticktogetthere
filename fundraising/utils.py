@@ -17,7 +17,7 @@ nonce = web3.eth.getTransactionCount(my_address)
 # compiling the contract to extract bytecode and abi - this is running only at launch
 
 with open(
-    "sticktogether\\fundraising\\contracts\\Fundraising.sol",
+    "fundraising\\contracts\\Fundraising.sol",
     "r",
 ) as file:
     fundraising_file = file.read()
