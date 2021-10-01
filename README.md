@@ -27,10 +27,10 @@ Be sure to activate your venv to install there all the requirements, on Windows 
 path\to\venv\Scripts\Activate.ps1
 ```
 
-Once you're working in the venv install there all the requirements:
+Once you're working in the venv, install there all the requirements:
 
 ```
-pip install -r requirements.txt
+pip install -r path/to/requirements.txt
 ```
 
 Now, before launching Django, you have to change some paramters in the code to make it work in your environment.
