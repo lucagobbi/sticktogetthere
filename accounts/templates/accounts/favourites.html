@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}{{ block.super }} | Favourites{% endblock head_title %}
+
+{% block scripts %}
+
+{% endblock scripts %}
+
+{% block content %}
+
+<div class="container my-5 text-center">
+	<h1>Your favourite Projects</h1>
+	<hr>
+	<br>
+    {% if favourites %}
+    {% for project in favourites %}
+    <section class="dark">
+	<div class="container py-4">
+		<article class="postcard dark green">
+			<a class="postcard__img_link" href="{% url 'project-detail' id=project.id %}">
+				<img class="postcard__img" src="{{ project.image.url }}" alt="Image Title" />
+			</a>
+			<div class="postcard__text">
+				<h1 class="postcard__title green"><a href="{% url 'project-detail' id=project.id %}">{{ project.title }}</a></h1>
+				<div class="d-flex postcard__subtitle small">
+					<p class="mr-3">Deadline: {{ project.deadline}}</p>
+                    <p>Goal: {{ project.goal }} wei</p>
+				</div>
+				<div class="postcard__preview-txt">{{ project.description|truncatechars:400 }}</div>
+			</div>
+		</article>
+	</div>
+</section>
+    {% endfor %}
+    {% else %}
+    <h6>You have no favourites, start following our projects!</h6>
+    {% endif %}
+</div>        
+
+{% endblock content %}

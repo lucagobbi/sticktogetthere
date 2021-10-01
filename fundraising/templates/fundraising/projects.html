@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'ccs/base.css' %}">
+
+{% block head_title %}{{ block.super }} | Projects{% endblock head_title %}
+
+
+{% block content %}
+
+<div class="container my-5">
+
+{% for project in projects %}
+<section class="dark">
+	<div class="container py-4">
+		<article class="postcard dark green">
+			<a class="postcard__img_link" href="{% url 'project-detail' id=project.id %}">
+				<img class="postcard__img" src="{{ project.image.url }}" alt="Image Title" />
+			</a>
+			<div class="postcard__text">
+				<h1 class="postcard__title green"><a href="{% url 'project-detail' id=project.id %}">{{ project.title }}</a></h1>
+				<div class="d-flex postcard__subtitle small">
+					<p class="mr-3">Deadline: {{ project.deadline}}</p>
+                    <p>Goal: {{ project.goal }} wei</p>
+				</div>
+				<div class="postcard__preview-txt">{{ project.description|truncatechars:400 }}</div>
+			</div>
+		</article>
+	</div>
+</section>
+{% endfor %}
+
+
+</div>
+
+            
+
+{% endblock content %}

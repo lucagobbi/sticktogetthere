@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}{{ block.super }} | {{ project.title }}{% endblock head_title %}
+
+{% block content %}
+
+<div class="container">
+<section class="dark">
+	<div class="container py-4">
+		<article class="postcard dark green">
+				<img class="postcard__img" src="{{ project.image.url }}" alt="Image Title" />
+			<div class="postcard__text">
+				<div class="d-flex justify-content-between">
+				<h1 class="postcard__title green">{{ project.title }}</h1>
+				{% if not request.user.is_superuser %}
+				<form action="{% url 'add-remove-favourite' id=project.id %}" method="POST">
+				{% csrf_token %}
+				{% if project in profile.favourites.all %}
+				<button class="btn btn-heart" type="submit"><i class="fas fa-heart fa-2x"></i></button>
+				{% else %}
+				<button class="btn btn-heart" type="submit"><i class="far fa-heart fa-2x"></i></button>
+				{% endif %}
+				</form>
+				{% endif %}
+				</div>
+				<hr>
+				<div class="d-flex postcard__subtitle small">
+					<p class="mr-3">Deadline: {{ project.deadline}}</p>
+                    <p>Goal: {{ project.goal }} wei</p>
+				</div>
+				<div class="postcard__preview-txt mb-2">{{ project.description }}</div>
+                <div class="justify-content-between">
+                <p class="mt-2">Contract Address: {{ project.address }}</p>
+                <p>Amount raised: {{ balance }}</p>
+				<p>Number of contributors: {{ numberOfContributors }}</p>
+				</div>
+				<div class="d-flex mt-3 justify-content-start">
+				<a class="mr-4" href="{% url 'contribute' id=project.id %}"><button class="btn btn-send">Contribute</button></p></a>
+                <a href="{% url 'project-requests' id=project.id %}"><button class="btn btn-send">Requests</button></p></a>
+				</div> 
+			</div>
+		</article>
+	</div>
+</section>
+</div>
+
+            
+
+{% endblock content %}

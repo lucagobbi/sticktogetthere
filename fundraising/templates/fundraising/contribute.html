@@ -1,0 +1,515 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block head_title %}{{ block.super }} | Contribute{% endblock head_title %}
+
+
+{% block content %}
+
+<style>
+        .meta-gray {
+            -webkit-filter: grayscale(1);
+        }
+        .meta-normal {
+            -webkit-filter: grayscale(0);
+        }
+</style>
+
+<div class="container">
+        <div class="row my-5 text-center">
+            <div class="col-md-12">
+                <h2>Contribute - {{ project.title }}</h2>
+                <p style="display:none;" id="address">{{ contractAddress }}</p>
+            </div>            
+        </div>
+        <div class="row my-5 text-center">
+            <div class="col-md-12">
+                <img id="metaicon" class="meta-gray" width="100" height="100" src="{% static 'images/metamask.png' %}" alt="">
+            </div>
+        </div>
+        <div class="row my-5 text-center">
+            <div class="col-md-12">
+                <button id="enableMetamask" class="btn btn-send">Connect with Metamask</button>
+            </div>
+        </div>
+        <div class="row my-5 text-center">
+            <div class="col-md-12">
+                <span id="status"></span>
+            </div>
+        </div>
+        <section class="contract-section my-5 hidden">
+            <div class="row text-center">
+                <div class="col-md-4 offset-4">
+                    <span>Set Contribution: <input id="value" type="text" class="search" value=""> <button id="contribute" class="btn btn-send my-3">Contribute</button></span>
+                </div>
+            </div>
+        </section>
+        <br>
+</div> 
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+    let currentAccount = null;
+    let web3;
+    let abi = [
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_goal",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_deadline",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_sender",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "ContributeEvent",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_recipient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "CreateRequestEvent",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "_recipient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "MakePaymentEvent",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "admin",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "contribute",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "contributors",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"internalType": "address payable",
+				"name": "_recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_value",
+				"type": "uint256"
+			}
+		],
+		"name": "createRequest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "deadline",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_requestIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "getRequestInfo",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "goal",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_requestNo",
+				"type": "uint256"
+			}
+		],
+		"name": "makePayment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "minContribution",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "numberOfContributors",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "numberOfRequests",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "raisedAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "requests",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"internalType": "address payable",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "completed",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "numberOfVoters",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_requestNo",
+				"type": "uint256"
+			}
+		],
+		"name": "voteRequest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"stateMutability": "payable",
+		"type": "receive"
+	}
+];
+    let contractAddress =  document.getElementById("address").textContent;
+
+	// handling accounts changing
+    function handleAccountsChanged(accounts) {
+            console.log('Calling HandleChanged')
+			// setting current account variable to pass it in the vote function
+            if (accounts.length === 0) {
+                console.log('Please connect to MetaMask.');
+                $('#enableMetamask').html('Connect with Metamask')
+            } else if (accounts[0] !== currentAccount) {
+                currentAccount = accounts[0];
+                $('#enableMetamask').html(currentAccount)
+                $('#status').html('')
+
+                if(currentAccount != null) {
+                    // Set the button label
+                    $('#enableMetamask').html(currentAccount)
+                }
+            }
+            console.log('WalletAddress in HandleAccountChanged ='+currentAccount)
+        }
+
+		// connecting metamask to this webpage
+        function connect() {
+            console.log('Calling connect()')
+            ethereum
+            .request({ method: 'eth_requestAccounts' })
+            .then(handleAccountsChanged)
+            .catch((err) => {
+            if (err.code === 4001) {
+                // EIP-1193 userRejectedRequest error
+                // If this happens, the user rejected the connection request.
+                console.log('Please connect to MetaMask.');
+                $('#status').html('You refused to connect Metamask')
+            } else {
+                console.error(err);
+            }
+            });
+        }
+
+		// open metamask
+        function detectMetaMask() {
+            if (typeof window.ethereum !== 'undefined') {                
+                return true
+            } else {                
+                return false
+            }
+        }
+
+		// calling contribute function on the contract
+        async function contribute() {
+
+            console.log('Contribute')
+			// picking value from the contribute value form in the front end
+            input_value = $('#value').val()
+
+            if(input_value.trim() == '') {
+                input_value = 0;
+            }
+            if(!isNaN(input_value)) {
+                if (input_value >= 100){
+                    input_value = parseInt(input_value);
+                }  else {
+                    window.alert("Minimum Contribution is not met!");
+                    return
+                }
+
+            }
+			// calling that specific contract based on project address
+            const contractFirst = new web3.eth.Contract(
+                        abi,
+                        contractAddress
+            );
+			// calling contribute method from the contract with parameters picked from the front end
+            contractFirst.methods.contribute().send({from:currentAccount, value:input_value}).then(function (result) {
+                console.log(result);
+                window.alert("Your transaction hash: " + result.transactionHash + "\nFor more info copy and paste it on Etherscan!");
+            })
+        }
+</script>
+
+<script>    
+	// when the document is ready try to connect metamask
+    $( document ).ready(function() {
+        m = detectMetaMask()
+        if(m) {
+            $('#metaicon').removeClass('meta-gray')
+            $('#metaicon').addClass('meta-normal')
+            $('#enableMetamask').attr('disabled',false)
+            connect() // connected wallet must be shown
+        } else {
+            $('#enableMetamask').attr('disabled',true)
+            $('#metaicon').removeClass('meta-normal')
+            $('#metaicon').addClass('meta-gray')
+        }
+		// calling connect function clicking on Connect With Metamask
+        $('#enableMetamask').click(function() {
+                connect()
+        });
+		// calling contribute function clicking on Contribute
+        $('#contribute').click(function() {
+                contribute()
+        });
+		// connecting to the provider
+        try {            
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        } catch (error) {
+            alert(error)
+        }
+
+    })
+</script>
+
+{% endblock scripts%}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}{{ block.super }} | Projects{% endblock head_title %}
+
+
+{% block content %}
+
+<div class="container my-5">
+<section class="dark">
+	<div class="container py-4">
+		<article class="postcard dark green">
+			<div class="postcard__text">
+                <div class="d-flex justify-content-between">
+				<h1 class="postcard__title green">{{ project.title }} - Requests</h1>
+                {% if request.user.is_superuser %}
+                <a href="{% url 'newrequest' id=project.id %}"><button class="btn btn-send">New Request</button></a>
+                {% endif %}
+                </div>
+                <hr>
+                {% if open_requests or done_requests %}
+                <h6>Open Requests</h6>
+                <ul>
+                    {% for request in open_requests %}
+                    <a href="{% url 'request-detail' id=request.id %}"><li>{{ request.description|truncatechars:200 }}</li></a>
+                    <hr>
+                    {% endfor %}
+                </ul>
+                <hr>
+                <h6>Completed Requests</h6>
+                <ul>
+                    {% for request in done_requests %}
+                    <a href="{% url 'request-detail' id=request.id %}"><li>{{ request.description|truncatechars:200 }}</li></a>
+                    <hr>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <h6>There are no requests for this project</h4>
+                {% endif %}
+			</div>
+		</article>
+	</div>
+</section>
+</div>
+
+            
+
+{% endblock content %}

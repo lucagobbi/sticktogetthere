@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}{{ block.super }} | Results{% endblock head_title %}
+
+
+{% block content %}
+
+<div class="results container my-4 text-center">
+    <h3>Search Results</h3>
+    <hr>
+    <p>You searched for: {{ querystring }}</p>
+
+<div class="row justify-content-center my-4">
+
+{% for project in projects %}
+
+<div>
+<h4><a href="{% url 'project-detail' id=project.id %}">{{ project.title }}</a></h4>
+<p class="mr-3">Deadline: {{ project.deadline}}</p>
+<p>Goal: {{ project.goal }} wei</p>
+<p>>{{ project.description|truncatechars:400 }}</p>
+</div>
+<hr>
+
+{% endfor %}
+
+</div>
+
+{% endblock content %}

@@ -1,0 +1,17 @@
+{% extends 'base1.html' %}
+{% load static %}
+
+{% block head_title %}{{ block.super }} | Logout{% endblock head_title %}
+
+{% block content %}
+
+    
+            <div class="row justify-content-center my-5">
+                <div class="col-6 text-center">
+                <h4>You have successfully logged out!</h4>
+                <a class="link-success underline" href="{% url 'login' %}">Log In</a>
+                </div>
+            </div>
+
+
+{% endblock content %}

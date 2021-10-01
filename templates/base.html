@@ -1,0 +1,130 @@
+{% load static %}
+{% load notifications_tags %}
+
+<html>
+  <head>
+    <title>{% block head_title %}Stick To Get There{% endblock head_title %}</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/3.0.0-rc.5/web3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+  <body>
+
+  <nav class="navbar navbar-expand-lg navbar-transparent bg-transparent">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'homepage' %}">
+    <h1>Stick To Get There</h1>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <i class="fas fa-bars"></i></button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav m-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" aria-current="page" href="{% url 'projects' %}">Projects</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'about' %}">About</a>
+        </li>
+        {% if request.user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ request.user.username }}
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% if request.user.is_superuser %}
+            <li><a class="dropdown-item" href="{% url 'newproject' %}">New Project</a></li>
+            {% else %}
+            <li><a class="dropdown-item" href="{% url 'favourites' %}">Your Favourites</a></li>
+            {% endif  %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+          </ul>
+        </li>
+        {% if request.user.is_superuser %}
+        <div class="dropdown">
+        <button class="btn btn-notification" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-bell fa-lg"></i>
+        {% notifications_unread as unread_count %}
+        {% if unread_count %}
+            <span>{% live_notify_badge badge_class="badge" %}</span>
+        {% endif %}
+        </button>
+        <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
+          {% for notice in notifications %}
+          {% if notice.unread and notice.recipient == request.user %}
+            <p>{{ notice.verb }}</p>
+          {% endif %}
+          {% endfor %}
+          <a class="dropdown-item" href="{% url 'view_all' %}">View all</a>
+        </div>
+        {% endif %}
+        </div>
+        {% endif %}
+      </ul>
+      <form class="d-flex" action="{% url 'search' %}">
+        <input name="q" class="form-control mt-1 search" type="search" placeholder="Search..." aria-label="Search">
+      <button class="btn" type="submit"><i class="fas fa-2x fa-search btn-search-icon"></i></button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+{% block content %}
+
+{% endblock content %}
+
+{% block scripts %}
+
+{% endblock scripts %}
+
+<footer class="footer">
+  <div class="container">
+    <div class="row justify-content-around">
+      <div class="footer-col">
+        <ul>
+        <li><h4 class="font-weight-bold" id="claim">Stick To Get There</h4></li>
+        <li><p>Created by:<br>
+        Luca Gobbi<br><br>
+        lucasghegobbi@gmail.com</p></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <ul>
+          <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="https://ethereum.org/en/">What is Ethereum</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Links</h4>
+        <ul>
+          <li><a href="{% url 'homepage' %}">Home</a></li>
+          <li><a href="#">Projects</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contacts</h4>
+        <div class="social-links">
+          <a href="https://www.facebook.com/luca.gobbi.752"><i class="fab fa-2x fa-facebook-square"></i></a>
+          <a href="https://it.linkedin.com/in/lucagobbi"><i class="fab  fa-2x fa-linkedin"></i></a>        
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/3.0.0-rc.5/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>

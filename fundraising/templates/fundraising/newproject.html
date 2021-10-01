@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'ccs/base.css' %}">
+
+{% block head_title %}{{ block.super }} | Projects{% endblock head_title %}
+
+{% block scripts %}
+
+    <script src={% static 'js/newproject.js' %} defer></script>
+
+{% endblock scripts %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-8">
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} text-center my-3" role="alert">
+        <h6 class="my-3" id="messages">{{ message }}</h6>
+    </div>
+    {% endfor %}
+    {% endif %}
+    </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-8 text-center">
+
+    <h1 class="newproject mt-5">Open your Project</h1>
+
+    <form  enctype="multipart/form-data" action="" method="POST" novalidate id="regForm">
+
+    {% csrf_token %}
+
+    <!-- One "tab" for each step in the form: -->
+    <div class="tab">
+        {{ form.title|as_crispy_field }}
+        <small id="passwordHelpBlock" class="form-text text-muted my-2">
+          Give a short title for your project. Remember to use related keywords so that other users can find it easily.
+        </small>
+        {{ form.description|as_crispy_field }}
+        <small id="passwordHelpBlock" class="form-text text-muted my-2">
+          Give a full description of this project, its goal and mission.
+        </small>
+    </div>
+
+    <div class="tab">
+        {{ form.image|as_crispy_field }}
+        <small id="passwordHelpBlock" class="form-text text-muted my-2">
+          Upload an image that synthesizes your project.
+        </small>
+    </div>
+
+    <div class="tab">
+        {{ form.goal|as_crispy_field }}
+        <small id="passwordHelpBlock" class="form-text text-muted my-2">
+          Define a goal to be reached from the fund raising.
+        </small>
+        {{ form.deadline|as_crispy_field }}
+        <small id="passwordHelpBlock" class="form-text text-muted my-2">
+          Define a deadline to your project. If the goal is not reached when the deadline is passed your contrat will not accept further payments.
+        </small>
+    </div>
+
+    <div class="tab">
+        <h6 class="my-3">Are you sure to submit this Auction?</h6>
+    </div>
+
+<div style="overflow:auto;">
+  <div style="float:right;">
+    <button type="button" class="btn btn-send" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+    <button type="button" class="btn btn-send" id="nextBtn" onclick="nextPrev(1)">Next</button>
+  </div>
+</div>
+
+<!-- Circles which indicates the steps of the form: -->
+<div style="text-align:center;margin-top:40px;">
+  <span class="step"></span>
+  <span class="step"></span>
+  <span class="step"></span>
+  <span class="step"></span>
+</div>
+
+</form>
+</div>
+</div>
+
+            
+
+{% endblock content %}

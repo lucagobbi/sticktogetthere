@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}{{ block.super }} | About{% endblock head_title %}
+
+{% block scripts %}
+
+    <script src={% static 'js/about.js' %} defer></script>
+
+{% endblock scripts %}
+
+{% block content %}
+
+            <div class="container about-container my-5">
+                <div class="container intro-container text-center my-5">
+                    <p class="intro">Welcome to our fundraising decentralized platform!<br> Charity and fundraising are really complex things to handle, especially in the jungle of the Internet.<br><br>
+                        Trust is the key for a well-functioning campaign and transparency is not always granted for contributors...<br><br>...Till now! With our smart contracts platform you can contribute to our projects safely!
+                        <br><br><br>Scroll down to <span>stick with us!</span></p>
+                </div> 
+                <div class="container text-center my-5">                   
+                <div class="about-grid">
+                    <h1 class="stick-list slide-in from-left">STICK TOGETHER</h1>
+                    <p class="slide-in from-right">Follow our projects to embrace a cause you care and improve society.</p>
+                </div>
+                <div class="about-grid">
+                    <h1 class="stick-list slide-in from-right">STICK TO GET ETHER</h1>
+                    <p class="slide-in from-left">Once a project has been deployed a smart contract is created and you can send ether directly to the address.</p>
+                </div>
+                <div class="about-grid">
+                    <h1 class="stick-list slide-in from-left">STICK TO GET THERE</h1>
+                    <p class="slide-in from-right">You can control how contributors' money is spent voting for requests proposed by administrators.</p>
+                </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock content %}

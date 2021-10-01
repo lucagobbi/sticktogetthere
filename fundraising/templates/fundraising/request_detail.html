@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head_title %}{{ block.super }} | Projects{% endblock head_title %}
+
+
+{% block content %}
+
+<div class="container my-5">
+<section class="dark">
+	<div class="container py-4">
+		<article class="postcard dark green">
+			<div class="postcard__text">
+				<div class="d-flex justify-content-between">
+				<h1 class="postcard__title green">{{ request.project.title }} - Request N° {{ requestNo }}</h1>
+				{% if request.completed == False %}
+                <a href="{% url 'vote' id=request.id %}"><button class="btn btn-send">Vote</button></a>
+				{% endif %}
+				</div>
+				<hr>
+                <p>Description: {{ request.description }}</p>
+				<p>Completed: {% if request.completed == False %}No{% else %}Yes{% endif %}</p>
+                <p>Value: {{ request.value}}</p>
+                <p>Send to: {{ request.addressTo }}</p>
+                <p>Number of voters: {{ numberOfVoters }}</p>
+				<p>Consensus reached: {{ consensus }}%</p>
+				<br>
+				{% if request.completed == False %}
+				<small><p>Consensus must reach a value greater than 50% to allow the administrator to execute payments for this request.</p></small>
+				{% if consensus > 50 %}
+						<a href="{% url 'send-payment' id=request.id %}"><button class="btn btn-send">Send Payment</button></a>
+				{% endif %}
+				{% endif %}
+			</div>
+		</article>
+	</div>
+</section>
+</div>
+
+            
+
+{% endblock content %}
