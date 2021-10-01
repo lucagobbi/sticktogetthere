@@ -52,7 +52,7 @@ Now you should be able to start Django calling these commands:
 
 ```
 python manage.py makemigrations
-python manage.py migrate
+python manage.py migrate --run --syncdb
 ```
 
 Create a superuser from CLI, this will be your admin account.
