@@ -50,7 +50,11 @@ def project_detail_view(request, id):
     project = get_object_or_404(Project, id=id)
     balance = getBalance(project.address)
     numberOfContributors = getNumberOfContributors(project.address)
-    profile = Profile.objects.get(user=request.user)
+    # admin does not need a profile
+    if request.user.is_superuser:
+        profile = None
+    else:
+        profile = Profile.objects.get(user=request.user)
 
     context = {
         "project": project,
